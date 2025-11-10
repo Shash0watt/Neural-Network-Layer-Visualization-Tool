@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Isometric 3D Neural Network Diagram with Outlines</title>
+    
+    <!-- ADDED: Google Font import for Space Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
     <style>
         body {
             margin: 0;
@@ -115,6 +121,8 @@
             display: flex;
             flex-direction: column;
             border: 1px solid #aaa;
+            font-family: 'Space Mono', monospace; /* ADDED: Set panel font */
+            overflow-y: auto; /* ADDED: Make the panel scroll if content overflows */
         }
 
         .edit-panel h3 {
@@ -168,12 +176,12 @@
 
 
         .layer-list-container {
-            flex: 1; /* MODIFIED: Allow shrinking/growing */
-            overflow-y: auto;
+            /* flex: 1; */ /* REMOVED */
+            /* overflow-y: auto; */ /* REMOVED */
             border: 1px solid #ddd;
             padding: 10px;
             background: #f9f9f9;
-            min-height: 100px; /* ADDED: give it a min height */
+            /* min-height: 100px; */ /* REMOVED */
         }
 
         .layer-row {
@@ -237,12 +245,12 @@
 
         /* ADDED: Styles for legend editor */
         .legend-list-container {
-            flex: 1; /* Allow shrinking/growing */
-            overflow-y: auto;
+            /* flex: 1; */ /* REMOVED */
+            /* overflow-y: auto; */ /* REMOVED */
             border: 1px solid #ddd;
             padding: 10px;
             background: #f9f9f9;
-            min-height: 100px; /* give it a min height */
+            /* min-height: 100px; */ /* REMOVED */
             margin-bottom: 5px; /* Space before 'Add Type' button */
         }
         
