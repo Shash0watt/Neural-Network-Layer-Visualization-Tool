@@ -24,7 +24,7 @@ This tool is a single `index.html` file that uses Three.js to render an interact
 
 * **[Three.js](https://threejs.org/)**: For 3D rendering in the browser.
 * **[Tailwind CSS](https://tailwindcss.com/)**: For styling the UI and edit panel.
-* **HTML, CSS, & JavaScript**: All contained within a single `index.html` file (which you can now split based on our last conversation!).
+* **HTML, CSS, & JavaScript**
 
 ## How to Use
 
