@@ -45,15 +45,6 @@ input[type=number] {
     /* Font-family will be set by JS */
 }
 
-/* START: Added style for borderless labels */
-.label.label-no-border {
-    background: transparent;
-    border-color: transparent;
-    padding: 2px 0; /* Adjust padding so it aligns nicely */
-}
-/* END: Added style for borderless labels */
-
-
 /* --- MODIFIED: Added old legend styles back --- */
 .legend {
     position: absolute;
@@ -73,4 +64,21 @@ input[type=number] {
     margin: 0 0 8px 0;
     padding-bottom: 5px;
     border-bottom: 1px solid #ddd;
-    font-weight: 600
+    font-weight: 600; /* Added for clarity */
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+.legend-color-box {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    border: 1px solid #555;
+    flex-shrink: 0;
+}
+.legend-item:last-child {
+    margin-bottom: 0;
+}
+/* --- End of Legend Styles --- */
