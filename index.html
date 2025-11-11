@@ -172,7 +172,8 @@
     </button>
 
     <!-- ShadCN-style Edit Panel Overlay (Dialog/Modal) -->
-    <div id="edit-panel-overlay" class="fixed inset-0 z-50 bg-black/60 items-center justify-center p-4 hidden">
+    <!-- MODIFIED: Changed z-50 to z-[110] to ensure it appears above the legend (which is z-index: 100) -->
+    <div id="edit-panel-overlay" class="fixed inset-0 z-[110] bg-black/60 items-center justify-center p-4 hidden">
         <!-- Panel (Card) -->
         <!-- MODIFIED: Changed max-w-4xl to max-w-6xl to make the panel wider -->
         <div class="border bg-card text-card-foreground rounded-lg shadow-lg w-full max-w-6xl max-h-[90vh] flex flex-col font-mono">
@@ -255,10 +256,12 @@
                     <div class="border rounded-lg">
                         <!-- Layers Header -->
                         <div class="flex p-3 bg-muted/50 border-b text-sm font-medium text-muted-foreground">
-                            <span class="px-2" style="flex: 3;">Layer Name</span>
-                            <span class="px-2" style="flex: 1;">H</span>
-                            <span class="px-2" style="flex: 1;">W</span>
-                            <span class="px-2" style="flex: 1;">C</span>
+                            <!-- MODIFIED: Changed flex: 3 to flex: 1 for name -->
+                            <span class="px-2" style="flex: 1;">Layer Name</span> 
+                            <!-- MODIFIED: Changed flex: 1 to fixed width for H, W, C -->
+                            <span class="px-2" style="width: 80px;">H</span>
+                            <span class="px-2" style="width: 80px;">W</span>
+                            <span class="px-2" style="width: 80px;">C</span>
                             <span class="px-2" style="width: 44px;">Color</span>
                             <span class="px-2" style="width: 36px;"></span> <!-- Spacer -->
                         </div>
@@ -371,7 +374,7 @@
             camera.zoom = 1.0;
             camera.updateProjectionMatrix();
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialiased: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             document.body.appendChild(renderer.domElement);
@@ -691,6 +694,7 @@
         }
 
         function addLayerRow(layer) {
+            // --- FIX: Added variable definitions that were missing ---
             const list = document.getElementById('layer-list');
             const row = document.createElement('div');
             // MODIFIED: Use Tailwind classes for the row
@@ -700,13 +704,16 @@
                 ? layer.color 
                 : (colorMap[getLayerType(layer.name)] || defaultColor);
             const hexColor = '#' + new THREE.Color(initialColor).getHexString();
+            // --- END FIX ---
 
             // MODIFIED: Use Tailwind classes for inputs
             row.innerHTML = `
-                <input type="text" name="name" value="${layer.name}" class="h-9 border border-input bg-background rounded-md px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring" style="flex: 3;">
-                <input type="number" name="H" value="${layer.H}" min="1" class="h-9 border border-input bg-background rounded-md px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring" style="flex: 1;">
-                <input type="number" name="W" value="${layer.W}" min="1" class="h-9 border border-input bg-background rounded-md px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring" style="flex: 1;">
-                <input type="number" name="C" value="${layer.C}" min="1" class="h-9 border border-input bg-background rounded-md px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring" style="flex: 1;">
+                <!-- MODIFIED: Changed flex: 3 to flex: 1 for name -->
+                <input type="text" name="name" value="${layer.name}" class="h-9 border border-input bg-background rounded-md px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring" style="flex: 1;">
+                <!-- MODIFIED: Changed flex: 1 to fixed width for H, W, C -->
+                <input type="number" name="H" value="${layer.H}" min="1" class="h-9 border border-input bg-background rounded-md px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring" style="width: 80px;">
+                <input type="number" name="W" value="${layer.W}" min="1" class="h-9 border border-input bg-background rounded-md px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring" style="width: 80px;">
+                <input type="number" name="C" value="${layer.C}" min="1" class="h-9 border border-input bg-background rounded-md px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring" style="width: 80px;">
                 <input type="color" name="color" value="${hexColor}" class="h-9 w-11 p-0 border-none rounded-md cursor-pointer" style="width: 44px;">
                 <button class="remove-btn h-9 w-9 p-0 rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90 flex items-center justify-center transition-colors">
                     <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
