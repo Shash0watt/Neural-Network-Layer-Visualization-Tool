@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Isometric 3D Neural Network Diagram</title>
+    <title>3D Neural Network Diagram</title>
 
     <!-- 1. Add Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -113,6 +113,7 @@
             white-space: nowrap;
             pointer-events: none;
             user-select: none;
+            /* Font-family will be set by JS */
         }
 
         /* --- MODIFIED: Added old legend styles back --- */
@@ -126,8 +127,8 @@
             border: 1px solid #ccc;
             z-index: 100;
             font-size: 13px;
-            /* Use the default sans-serif font, not mono */
-            font-family: 'Inter', sans-serif; 
+            /* MODIFIED: Removed hard-coded font-family, will be set by JS */
+            /* font-family: 'Inter', sans-serif; */
         }
         .legend h4 {
             margin: 0 0 8px 0;
@@ -392,10 +393,13 @@
             controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
             controls.mouseButtons.RIGHT = THREE.MOUSE.PAN;
 
+            // MODIFICATION: Call setupFontPicker *before* createNetwork
+            // so the labels are created with the correct initial font.
+            setupFontPicker();
             createNetwork();
             createLegend(); 
             setupEditPanelListeners();
-            setupFontPicker();
+            // setupFontPicker(); // Moved up
 
             const centerZ = totalZLength / 2;
             camera.lookAt(0, 0, centerZ);
@@ -443,6 +447,9 @@
             const outlineMaterial = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
             
             const lineOffset = Math.max(0.1, labelDistance - 0.2); 
+            
+            // Get the current font from the body
+            const currentFont = document.body.style.fontFamily || "Times New Roman";
 
             layerData.forEach((layer, i) => {
                 const visual_W = Math.log(layer.W + 1) * 1.5;
@@ -477,6 +484,7 @@
                 dimLabelDiv.className = 'label';
                 dimLabelDiv.textContent = `${layer.H}x${layer.W}x${layer.C}`;
                 dimLabelDiv.style.fontSize = `${labelFontSize}px`;
+                dimLabelDiv.style.fontFamily = currentFont; // MODIFIED: Apply current font
                 
                 const dimLabel = new CSS2DObject(dimLabelDiv);
                 dimLabel.position.set(0, -visual_H / 2 - labelDistance, meshCenterZ); 
@@ -498,6 +506,7 @@
                     nameLabelDiv.className = 'label';
                     nameLabelDiv.textContent = layer.name;
                     nameLabelDiv.style.fontSize = `${labelFontSize}px`;
+                    nameLabelDiv.style.fontFamily = currentFont; // MODIFIED: Apply current font
                     
                     const nameLabel = new CSS2DObject(nameLabelDiv);
                     nameLabel.position.set(0, visual_H / 2 + labelDistance, meshCenterZ); 
@@ -540,13 +549,43 @@
 
         // --- Functions for Edit Panel ---
         
+        // --- MODIFICATION: NEW FUNCTION ---
+        /**
+         * Updates the font-family for the body, legend, and all 3D labels.
+         * @param {string} fontFamily - The CSS font-family string (e.g., "Arial")
+         */
+        function updateGlobalFont(fontFamily) {
+            // 1. Change main body font
+            document.body.style.fontFamily = fontFamily;
+            
+            // 2. Keep the edit panel font as 'Space Mono'
+            const monoPanel = document.querySelector('.font-mono');
+            if (monoPanel) {
+                monoPanel.style.fontFamily = 'Space Mono, monospace';
+            }
+            
+            // 3. Re-apply font to the legend
+            const legend = document.getElementById('legend');
+            if (legend) {
+                legend.style.fontFamily = fontFamily;
+            }
+            
+            // 4. Re-apply font to all existing 3D labels
+            document.querySelectorAll('.label').forEach(label => {
+                label.style.fontFamily = fontFamily;
+            });
+        }
+        // --- END OF NEW FUNCTION ---
+
         function setupFontPicker() {
             const fonts = ["Times New Roman", "Arial", "Courier New", "Georgia", "Verdana"];
             const fontPicker = document.getElementById('font-picker');
             
             fontPicker.innerHTML = ''; 
             const defaultFont = "Times New Roman";
-            document.body.style.fontFamily = defaultFont; // Set initial font
+
+            // MODIFIED: Set initial font for body, legend, and labels
+            updateGlobalFont(defaultFont); 
 
             fonts.forEach(font => {
                 const option = document.createElement('option');
@@ -558,17 +597,9 @@
                 fontPicker.appendChild(option);
             });
 
+            // MODIFIED: Use the new function on change
             fontPicker.addEventListener('change', (e) => {
-                // Change main body font, but keep panel font as mono
-                document.body.style.fontFamily = e.target.value;
-                // Re-apply mono font to panel just in case
-                document.querySelector('.font-mono').style.fontFamily = 'Space Mono, monospace';
-                // Also re-apply font to legend
-                document.querySelector('.legend').style.fontFamily = e.target.value;
-                // And labels
-                document.querySelectorAll('.label').forEach(label => {
-                    label.style.fontFamily = e.target.value;
-                });
+                updateGlobalFont(e.target.value);
             });
         }
 
