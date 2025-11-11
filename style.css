@@ -45,11 +45,6 @@ input[type=number] {
     /* Font-family will be set by JS */
 }
 
-.label.no-border {
-    border: none;
-    background: transparent;
-}
-
 /* --- MODIFIED: Added old legend styles back --- */
 .legend {
     position: absolute;
@@ -87,3 +82,9 @@ input[type=number] {
     margin-bottom: 0;
 }
 /* --- End of Legend Styles --- */
+
+/* ADDED: New class to remove label borders and background */
+.label.no-border {
+    border: none;
+    background: transparent;
+}
