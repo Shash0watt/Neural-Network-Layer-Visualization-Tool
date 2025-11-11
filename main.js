@@ -32,6 +32,8 @@ let widthMultiplier = 1.5;
 let channelMultiplier = 1.5;
 // END: Added Multiplier Variables
 
+let removeLabelBorders = false; // <-- ADDED THIS LINE
+
 const frustumSize = 100;
 const showNameLabels = true; 
 
@@ -196,6 +198,9 @@ function createNetwork() {
         // Dimension Label
         const dimLabelDiv = document.createElement('div');
         dimLabelDiv.className = 'label';
+        if (removeLabelBorders) { // <-- ADDED THIS BLOCK
+            dimLabelDiv.classList.add('no-border');
+        }
         dimLabelDiv.textContent = `${layer.H}x${layer.W}x${layer.C}`;
         dimLabelDiv.style.fontSize = `${labelFontSize}px`;
         dimLabelDiv.style.fontFamily = currentFont; // MODIFIED: Apply current font
@@ -218,6 +223,9 @@ function createNetwork() {
         if (showNameLabels) {
             const nameLabelDiv = document.createElement('div');
             nameLabelDiv.className = 'label';
+            if (removeLabelBorders) { // <-- ADDED THIS BLOCK
+                nameLabelDiv.classList.add('no-border');
+            }
             nameLabelDiv.textContent = layer.name;
             nameLabelDiv.style.fontSize = `${labelFontSize}px`;
             nameLabelDiv.style.fontFamily = currentFont; // MODIFIED: Apply current font
@@ -345,6 +353,10 @@ function setupEditPanelListeners() {
     const channelMultValue = document.getElementById('channel-multiplier-value');
     // END: Add Multiplier Sliders
 
+    // START: Add Label Border Toggle // <-- ADDED THIS BLOCK
+    const toggleBorderCheckbox = document.getElementById('toggle-label-border');
+    // END: Add Label Border Toggle
+
     showBtn.addEventListener('click', () => {
         populateEditPanel();
         populateLegendPanel(); // ADDED
@@ -366,6 +378,8 @@ function setupEditPanelListeners() {
         channelMultSlider.value = channelMultiplier;
         channelMultValue.textContent = channelMultiplier.toFixed(1);
         // END: Set Initial Multiplier Slider Values
+
+        toggleBorderCheckbox.checked = removeLabelBorders; // <-- ADDED THIS LINE
 
         overlay.classList.remove('hidden');
         overlay.classList.add('flex'); // Make sure it's flex
@@ -530,6 +544,8 @@ function rebuildNetworkFromPanel() {
     channelMultiplier = parseFloat(document.getElementById('channel-multiplier').value) || 1.5;
     // END: Read Multiplier Values
 
+    removeLabelBorders = document.getElementById('toggle-label-border').checked; // <-- ADDED THIS LINE
+
     rows.forEach(row => {
         const nameInput = row.querySelector('input[name="name"]');
         const hInput = row.querySelector('input[name="H"]');
@@ -569,25 +585,3 @@ function rebuildNetworkFromPanel() {
     camera.position.set(40, 40, 40 + centerZ);
     controls.update();
 }
-
-function onWindowResize() {
-    const aspect = window.innerWidth / window.innerHeight;
-    camera.left = -frustumSize * aspect / 2;
-    camera.right = frustumSize * aspect / 2;
-    camera.top = frustumSize / 2;
-    camera.bottom = -frustumSize / 2; // Corrected from 2 to / 2
-    camera.updateProjectionMatrix();
-    
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    labelRenderer.setSize(window.innerWidth, window.innerHeight); 
-}
-
-function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera);
-    labelRenderer.render(scene, camera); 
-}
-
-init();
-animate();
