@@ -21,23 +21,21 @@ let labelRenderer;
 const networkGroup = new THREE.Group();
 let totalZLength = 0;
 
-// --- Global Settings ---
 let gap = 2; 
 let labelDistance = 3.0;
 let labelFontSize = 12;
 let blockOpacity = 0.85;
-let showLabelBox = true; // Toggle for label borders
 
-// Multiplier Variables
+// START: Added Multiplier Variables
 let heightMultiplier = 1.5;
 let widthMultiplier = 1.5;
 let channelMultiplier = 1.5;
-// --- End Global Settings ---
+// END: Added Multiplier Variables
 
 const frustumSize = 100;
 const showNameLabels = true; 
 
-// Make colorMap mutable
+// MODIFIED: Make colorMap mutable
 let colorMap = {
     'Input': 0x4285F4,
     'Pool': 0xDB4437,
@@ -107,12 +105,13 @@ function init() {
     controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
     controls.mouseButtons.RIGHT = THREE.MOUSE.PAN;
 
-    // Call setupFontPicker *before* createNetwork
+    // MODIFICATION: Call setupFontPicker *before* createNetwork
     // so the labels are created with the correct initial font.
     setupFontPicker();
     createNetwork();
     createLegend(); 
     setupEditPanelListeners();
+    // setupFontPicker(); // Moved up
 
     const centerZ = totalZLength / 2;
     camera.lookAt(0, 0, centerZ);
@@ -126,7 +125,7 @@ function init() {
 function createLegend() {
     const legend = document.getElementById('legend');
     // Clear everything except the title
-    const items = legend.querySelectorAll('.legend-item');
+    const items = legend.querySelectorAll('.legend-item'); // MODIFIED: Select old class
     items.forEach(item => item.remove());
 
     const addedTypes = new Set();
@@ -135,7 +134,7 @@ function createLegend() {
             const color = colorMap[layerType];
             const hexColor = '#' + new THREE.Color(color).getHexString();
 
-            // Use original class names
+            // MODIFIED: Use original class names
             const item = document.createElement('div');
             item.className = 'legend-item';
             
@@ -165,10 +164,11 @@ function createNetwork() {
     const currentFont = document.body.style.fontFamily || "Times New Roman";
 
     layerData.forEach((layer, i) => {
-        // Use Multiplier Variables
+        // START: Use Multiplier Variables
         const visual_W = Math.log(layer.W + 1) * widthMultiplier;
         const visual_H = Math.log(layer.H + 1) * heightMultiplier;
         const visual_C = Math.log(layer.C + 1) * channelMultiplier;
+        // END: Use Multiplier Variables
 
         const geometry = new THREE.BoxGeometry(visual_W, visual_H, visual_C);
         
@@ -196,13 +196,9 @@ function createNetwork() {
         // Dimension Label
         const dimLabelDiv = document.createElement('div');
         dimLabelDiv.className = 'label';
-        // Add class to remove border if toggled
-        if (!showLabelBox) { 
-            dimLabelDiv.classList.add('label-no-border'); 
-        }
         dimLabelDiv.textContent = `${layer.H}x${layer.W}x${layer.C}`;
         dimLabelDiv.style.fontSize = `${labelFontSize}px`;
-        dimLabelDiv.style.fontFamily = currentFont;
+        dimLabelDiv.style.fontFamily = currentFont; // MODIFIED: Apply current font
         
         const dimLabel = new CSS2DObject(dimLabelDiv);
         dimLabel.position.set(0, -visual_H / 2 - labelDistance, meshCenterZ); 
@@ -222,13 +218,9 @@ function createNetwork() {
         if (showNameLabels) {
             const nameLabelDiv = document.createElement('div');
             nameLabelDiv.className = 'label';
-            // Add class to remove border if toggled
-            if (!showLabelBox) { 
-                nameLabelDiv.classList.add('label-no-border'); 
-            }
             nameLabelDiv.textContent = layer.name;
             nameLabelDiv.style.fontSize = `${labelFontSize}px`;
-            nameLabelDiv.style.fontFamily = currentFont;
+            nameLabelDiv.style.fontFamily = currentFont; // MODIFIED: Apply current font
             
             const nameLabel = new CSS2DObject(nameLabelDiv);
             nameLabel.position.set(0, visual_H / 2 + labelDistance, meshCenterZ); 
@@ -248,8 +240,9 @@ function createNetwork() {
         // Connector lines
         if (i > 0) {
             const prevLayer = layerData[i-1];
-            // Use Multiplier Variable
+            // START: Use Multiplier Variable
             const prev_visual_C = Math.log(prevLayer.C + 1) * channelMultiplier;
+            // END: Use Multiplier Variable
             const prevLayerZEnd = currentZ - gap;
             const prevLayerCenterZ = prevLayerZEnd - prev_visual_C / 2;
 
@@ -272,6 +265,7 @@ function createNetwork() {
 
 // --- Functions for Edit Panel ---
 
+// --- MODIFICATION: NEW FUNCTION ---
 /**
  * Updates the font-family for the body, legend, and all 3D labels.
  * @param {string} fontFamily - The CSS font-family string (e.g., "Arial")
@@ -297,6 +291,7 @@ function updateGlobalFont(fontFamily) {
         label.style.fontFamily = fontFamily;
     });
 }
+// --- END OF NEW FUNCTION ---
 
 function setupFontPicker() {
     const fonts = ["Times New Roman", "Arial", "Courier New", "Georgia", "Verdana"];
@@ -305,7 +300,7 @@ function setupFontPicker() {
     fontPicker.innerHTML = ''; 
     const defaultFont = "Times New Roman";
 
-    // Set initial font for body, legend, and labels
+    // MODIFIED: Set initial font for body, legend, and labels
     updateGlobalFont(defaultFont); 
 
     fonts.forEach(font => {
@@ -318,7 +313,7 @@ function setupFontPicker() {
         fontPicker.appendChild(option);
     });
 
-    // Use the new function on change
+    // MODIFIED: Use the new function on change
     fontPicker.addEventListener('change', (e) => {
         updateGlobalFont(e.target.value);
     });
@@ -330,7 +325,7 @@ function setupEditPanelListeners() {
     const closeBtn = document.getElementById('close-panel-btn');
     const updateBtn = document.getElementById('update-network-btn');
     const addLayerBtn = document.getElementById('add-layer-btn');
-    const addTypeBtn = document.getElementById('add-type-btn');
+    const addTypeBtn = document.getElementById('add-type-btn'); // ADDED
     
     const labelSlider = document.getElementById('label-distance');
     const labelValue = document.getElementById('label-distance-value');
@@ -341,22 +336,19 @@ function setupEditPanelListeners() {
     const opacitySlider = document.getElementById('block-opacity');
     const opacityValue = document.getElementById('block-opacity-value');
 
-    // Add Label Border Toggle
-    const labelBordersToggle = document.getElementById('label-borders');
-
-    // Add Multiplier Sliders
+    // START: Add Multiplier Sliders
     const heightMultSlider = document.getElementById('height-multiplier');
     const heightMultValue = document.getElementById('height-multiplier-value');
     const widthMultSlider = document.getElementById('width-multiplier');
     const widthMultValue = document.getElementById('width-multiplier-value');
     const channelMultSlider = document.getElementById('channel-multiplier');
     const channelMultValue = document.getElementById('channel-multiplier-value');
+    // END: Add Multiplier Sliders
 
     showBtn.addEventListener('click', () => {
         populateEditPanel();
-        populateLegendPanel();
+        populateLegendPanel(); // ADDED
 
-        // Set initial values for all sliders and toggles
         labelSlider.value = labelDistance;
         labelValue.textContent = labelDistance.toFixed(1);
         gapSlider.value = gap;
@@ -366,17 +358,17 @@ function setupEditPanelListeners() {
         opacitySlider.value = blockOpacity;
         opacityValue.textContent = blockOpacity.toFixed(2);
 
+        // START: Set Initial Multiplier Slider Values
         heightMultSlider.value = heightMultiplier;
         heightMultValue.textContent = heightMultiplier.toFixed(1);
         widthMultSlider.value = widthMultiplier;
         widthMultValue.textContent = widthMultiplier.toFixed(1);
         channelMultSlider.value = channelMultiplier;
         channelMultValue.textContent = channelMultiplier.toFixed(1);
-
-        labelBordersToggle.checked = showLabelBox;
+        // END: Set Initial Multiplier Slider Values
 
         overlay.classList.remove('hidden');
-        overlay.classList.add('flex');
+        overlay.classList.add('flex'); // Make sure it's flex
     });
 
     closeBtn.addEventListener('click', () => {
@@ -388,6 +380,7 @@ function setupEditPanelListeners() {
         addLayerRow({ name: 'New Layer', H: 1, W: 1, C: 1 });
     });
 
+    // ADDED
     addTypeBtn.addEventListener('click', () => {
         addLegendRow('NewType', '#aaaaaa');
     });
@@ -398,7 +391,6 @@ function setupEditPanelListeners() {
         overlay.classList.remove('flex');
     });
 
-    // --- Add listeners for sliders ---
     labelSlider.addEventListener('input', (e) => {
         labelValue.textContent = parseFloat(e.target.value).toFixed(1);
     });
@@ -411,6 +403,8 @@ function setupEditPanelListeners() {
     opacitySlider.addEventListener('input', (e) => {
         opacityValue.textContent = parseFloat(e.target.value).toFixed(2);
     });
+
+    // START: Add Multiplier Slider Listeners
     heightMultSlider.addEventListener('input', (e) => {
         heightMultValue.textContent = parseFloat(e.target.value).toFixed(1);
     });
@@ -420,7 +414,7 @@ function setupEditPanelListeners() {
     channelMultSlider.addEventListener('input', (e) => {
         channelMultValue.textContent = parseFloat(e.target.value).toFixed(1);
     });
-    // No listener needed for the checkbox, it's read on "Update"
+    // END: Add Multiplier Slider Listeners
 }
 
 function populateEditPanel() {
@@ -431,6 +425,7 @@ function populateEditPanel() {
     });
 }
 
+// ADDED: Populate Legend Editor
 function populateLegendPanel() {
     const list = document.getElementById('legend-list');
     list.innerHTML = '';
@@ -441,16 +436,19 @@ function populateLegendPanel() {
 }
 
 function addLayerRow(layer) {
+    // --- FIX: Added variable definitions that were missing ---
     const list = document.getElementById('layer-list');
     const row = document.createElement('div');
+    // MODIFIED: Use Tailwind classes for the row
     row.className = 'flex items-center p-2 space-x-2';
     
     const initialColor = layer.color !== undefined 
         ? layer.color 
         : (colorMap[getLayerType(layer.name)] || defaultColor);
     const hexColor = '#' + new THREE.Color(initialColor).getHexString();
+    // --- END FIX ---
 
-    // Use Tailwind classes for inputs
+    // MODIFIED: Use Tailwind classes for inputs
     row.innerHTML = `
         <input type="text" name="name" value="${layer.name}" class="h-9 border border-input bg-background rounded-md px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring" style="flex: 1;">
         <input type="number" name="H" value="${layer.H}" min="1" class="h-9 border border-input bg-background rounded-md px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring" style="width: 80px;">
@@ -472,6 +470,7 @@ function addLayerRow(layer) {
     list.appendChild(row);
 }
 
+// ADDED: Add Legend Row
 function addLegendRow(typeName, hexColor) {
     const list = document.getElementById('legend-list');
     const row = document.createElement('div');
@@ -495,6 +494,7 @@ function addLegendRow(typeName, hexColor) {
     list.appendChild(row);
 }
 
+// ADDED: Rebuild Color Map
 function rebuildColorMapFromPanel() {
     const list = document.getElementById('legend-list');
     const rows = list.querySelectorAll('.flex');
@@ -513,25 +513,23 @@ function rebuildColorMapFromPanel() {
 }
 
 function rebuildNetworkFromPanel() {
-    rebuildColorMapFromPanel(); // Rebuild map first
+    rebuildColorMapFromPanel(); // ADDED: Rebuild map first
 
     const list = document.getElementById('layer-list');
     const rows = list.querySelectorAll('.flex'); // Selects the rows
     const newLayerData = [];
 
-    // Read all general settings from the panel
     labelDistance = parseFloat(document.getElementById('label-distance').value) || 3.0;
     gap = parseFloat(document.getElementById('cube-gap').value) || 2.0;
     labelFontSize = parseInt(document.getElementById('font-size').value) || 12; 
     blockOpacity = parseFloat(document.getElementById('block-opacity').value);
-    showLabelBox = document.getElementById('label-borders').checked; // Read toggle value
 
-    // Read Multiplier Values
+    // START: Read Multiplier Values
     heightMultiplier = parseFloat(document.getElementById('height-multiplier').value) || 1.5;
     widthMultiplier = parseFloat(document.getElementById('width-multiplier').value) || 1.5;
     channelMultiplier = parseFloat(document.getElementById('channel-multiplier').value) || 1.5;
+    // END: Read Multiplier Values
 
-    // Read layer data from the panel
     rows.forEach(row => {
         const nameInput = row.querySelector('input[name="name"]');
         const hInput = row.querySelector('input[name="H"]');
@@ -556,13 +554,13 @@ function rebuildNetworkFromPanel() {
     while (networkGroup.children.length > 0) {
         const child = networkGroup.children[0];
         networkGroup.remove(child);
-        // Dispose geometry and materials if needed
+        // Dispose geometry and materials if needed, but this is simpler
     }
 
     // Reset state and rebuild
     totalZLength = 0;
     createNetwork();
-    createLegend(); // Update legend
+    createLegend(); // ADDED: Update legend
 
     // Recenter camera
     const centerZ = totalZLength / 2;
@@ -577,7 +575,7 @@ function onWindowResize() {
     camera.left = -frustumSize * aspect / 2;
     camera.right = frustumSize * aspect / 2;
     camera.top = frustumSize / 2;
-    camera.bottom = -frustumSize / 2;
+    camera.bottom = -frustumSize / 2; // Corrected from 2 to / 2
     camera.updateProjectionMatrix();
     
     renderer.setSize(window.innerWidth, window.innerHeight);
