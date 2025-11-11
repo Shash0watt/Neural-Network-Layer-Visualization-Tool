@@ -123,7 +123,8 @@
             right: 20px;
             background: rgba(255, 255, 255, 0.85);
             padding: 10px 15px;
-            border-radius: 8px;
+            /* MODIFIED: Removed border-radius for square corners */
+            /* border-radius: 8px; */
             border: 1px solid #ccc;
             z-index: 100;
             font-size: 13px;
@@ -189,7 +190,8 @@
                 <!-- General Settings -->
                 <div class="space-y-4">
                     <h4 class="text-lg font-medium">General Settings</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- MODIFIED: Changed md:grid-cols-2 to grid-cols-1 to make it a single column -->
+                    <div class="grid grid-cols-1 gap-4">
                         <!-- Font Picker -->
                         <div class="flex flex-col space-y-2">
                             <label for="font-picker" class="text-sm font-medium">Font</label>
