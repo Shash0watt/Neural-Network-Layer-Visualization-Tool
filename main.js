@@ -26,6 +26,12 @@ let labelDistance = 3.0;
 let labelFontSize = 12;
 let blockOpacity = 0.85;
 
+// START: Added Multiplier Variables
+let heightMultiplier = 1.5;
+let widthMultiplier = 1.5;
+let channelMultiplier = 1.5;
+// END: Added Multiplier Variables
+
 const frustumSize = 100;
 const showNameLabels = true; 
 
@@ -158,9 +164,11 @@ function createNetwork() {
     const currentFont = document.body.style.fontFamily || "Times New Roman";
 
     layerData.forEach((layer, i) => {
-        const visual_W = Math.log(layer.W + 1) * 1.5;
-        const visual_H = Math.log(layer.H + 1) * 1.5;
-        const visual_C = Math.log(layer.C + 1) * 1.5;
+        // START: Use Multiplier Variables
+        const visual_W = Math.log(layer.W + 1) * widthMultiplier;
+        const visual_H = Math.log(layer.H + 1) * heightMultiplier;
+        const visual_C = Math.log(layer.C + 1) * channelMultiplier;
+        // END: Use Multiplier Variables
 
         const geometry = new THREE.BoxGeometry(visual_W, visual_H, visual_C);
         
@@ -232,7 +240,9 @@ function createNetwork() {
         // Connector lines
         if (i > 0) {
             const prevLayer = layerData[i-1];
-            const prev_visual_C = Math.log(prevLayer.C + 1) * 1.5;
+            // START: Use Multiplier Variable
+            const prev_visual_C = Math.log(prevLayer.C + 1) * channelMultiplier;
+            // END: Use Multiplier Variable
             const prevLayerZEnd = currentZ - gap;
             const prevLayerCenterZ = prevLayerZEnd - prev_visual_C / 2;
 
@@ -326,6 +336,15 @@ function setupEditPanelListeners() {
     const opacitySlider = document.getElementById('block-opacity');
     const opacityValue = document.getElementById('block-opacity-value');
 
+    // START: Add Multiplier Sliders
+    const heightMultSlider = document.getElementById('height-multiplier');
+    const heightMultValue = document.getElementById('height-multiplier-value');
+    const widthMultSlider = document.getElementById('width-multiplier');
+    const widthMultValue = document.getElementById('width-multiplier-value');
+    const channelMultSlider = document.getElementById('channel-multiplier');
+    const channelMultValue = document.getElementById('channel-multiplier-value');
+    // END: Add Multiplier Sliders
+
     showBtn.addEventListener('click', () => {
         populateEditPanel();
         populateLegendPanel(); // ADDED
@@ -338,6 +357,15 @@ function setupEditPanelListeners() {
         fontSizeValue.textContent = labelFontSize;
         opacitySlider.value = blockOpacity;
         opacityValue.textContent = blockOpacity.toFixed(2);
+
+        // START: Set Initial Multiplier Slider Values
+        heightMultSlider.value = heightMultiplier;
+        heightMultValue.textContent = heightMultiplier.toFixed(1);
+        widthMultSlider.value = widthMultiplier;
+        widthMultValue.textContent = widthMultiplier.toFixed(1);
+        channelMultSlider.value = channelMultiplier;
+        channelMultValue.textContent = channelMultiplier.toFixed(1);
+        // END: Set Initial Multiplier Slider Values
 
         overlay.classList.remove('hidden');
         overlay.classList.add('flex'); // Make sure it's flex
@@ -375,6 +403,18 @@ function setupEditPanelListeners() {
     opacitySlider.addEventListener('input', (e) => {
         opacityValue.textContent = parseFloat(e.target.value).toFixed(2);
     });
+
+    // START: Add Multiplier Slider Listeners
+    heightMultSlider.addEventListener('input', (e) => {
+        heightMultValue.textContent = parseFloat(e.target.value).toFixed(1);
+    });
+    widthMultSlider.addEventListener('input', (e) => {
+        widthMultValue.textContent = parseFloat(e.target.value).toFixed(1);
+    });
+    channelMultSlider.addEventListener('input', (e) => {
+        channelMultValue.textContent = parseFloat(e.target.value).toFixed(1);
+    });
+    // END: Add Multiplier Slider Listeners
 }
 
 function populateEditPanel() {
@@ -484,6 +524,12 @@ function rebuildNetworkFromPanel() {
     labelFontSize = parseInt(document.getElementById('font-size').value) || 12; 
     blockOpacity = parseFloat(document.getElementById('block-opacity').value);
 
+    // START: Read Multiplier Values
+    heightMultiplier = parseFloat(document.getElementById('height-multiplier').value) || 1.5;
+    widthMultiplier = parseFloat(document.getElementById('width-multiplier').value) || 1.5;
+    channelMultiplier = parseFloat(document.getElementById('channel-multiplier').value) || 1.5;
+    // END: Read Multiplier Values
+
     rows.forEach(row => {
         const nameInput = row.querySelector('input[name="name"]');
         const hInput = row.querySelector('input[name="H"]');
@@ -529,7 +575,7 @@ function onWindowResize() {
     camera.left = -frustumSize * aspect / 2;
     camera.right = frustumSize * aspect / 2;
     camera.top = frustumSize / 2;
-    camera.bottom = frustumSize / 2;
+    camera.bottom = -frustumSize / 2; // Corrected from 2 to / 2
     camera.updateProjectionMatrix();
     
     renderer.setSize(window.innerWidth, window.innerHeight);
