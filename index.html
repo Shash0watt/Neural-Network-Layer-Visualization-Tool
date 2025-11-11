@@ -91,7 +91,7 @@
                 
                 <div class="space-y-4">
                     <h4 class="text-lg font-medium">General Settings</h4>
-                    <div class="grid grid-cols-1 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         <div class="flex flex-col space-y-2">
                             <label for="font-picker" class="text-sm font-medium">Font</label>
                             <select id="font-picker" class="h-10 w-full border border-input bg-background rounded-md px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
@@ -125,6 +125,30 @@
                             </div>
                             <input type="range" id="block-opacity" name="block-opacity" min="0" max="1" step="0.05" value="0.85" class="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary">
                         </div>
+                        
+                        <!-- START: Added Multiplier Sliders -->
+                        <div class="flex flex-col space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label for="height-multiplier" class="text-sm font-medium">Height Multiplier (H)</label>
+                                <span id="height-multiplier-value" class="text-sm text-muted-foreground">1.5</span>
+                            </div>
+                            <input type="range" id="height-multiplier" name="height-multiplier" min="0.1" max="5" step="0.1" value="1.5" class="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary">
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label for="width-multiplier" class="text-sm font-medium">Width Multiplier (W)</label>
+                                <span id="width-multiplier-value" class="text-sm text-muted-foreground">1.5</span>
+                            </div>
+                            <input type="range" id="width-multiplier" name="width-multiplier" min="0.1" max="5" step="0.1" value="1.5" class="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary">
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label for="channel-multiplier" class="text-sm font-medium">Channel Multiplier (C)</label>
+                                <span id="channel-multiplier-value" class="text-sm text-muted-foreground">1.5</span>
+                            </div>
+                            <input type="range" id="channel-multiplier" name="channel-multiplier" min="0.1" max="5" step="0.1" value="1.5" class="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary">
+                        </div>
+                        <!-- END: Added Multiplier Sliders -->
                     </div>
                 </div>
 
