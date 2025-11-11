@@ -45,6 +45,11 @@ input[type=number] {
     /* Font-family will be set by JS */
 }
 
+.label.no-border {
+    border: none;
+    background: transparent;
+}
+
 /* --- MODIFIED: Added old legend styles back --- */
 .legend {
     position: absolute;
