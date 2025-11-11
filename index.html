@@ -3,28 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Isometric 3D Neural Network Diagram with Outlines</title>
-    
-    <!-- ADDED: Google Font import for Space Mono -->
+    <title>Isometric 3D Neural Network Diagram</title>
+
+    <!-- 1. Add Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 2. Add Fonts (Inter for main, Space Mono for panel) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
 
+    <!-- 3. Configure Tailwind to use ShadCN theme colors and fonts -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
+                    },
+                    colors: {
+                        border: 'hsl(var(--border))',
+                        input: 'hsl(var(--input))',
+                        ring: 'hsl(var(--ring))',
+                        background: 'hsl(var(--background))',
+                        foreground: 'hsl(var(--foreground))',
+                        primary: {
+                            DEFAULT: 'hsl(var(--primary))',
+                            foreground: 'hsl(var(--primary-foreground))',
+                        },
+                        secondary: {
+                            DEFAULT: 'hsl(var(--secondary))',
+                            foreground: 'hsl(var(--secondary-foreground))',
+                        },
+                        destructive: {
+                            DEFAULT: 'hsl(var(--destructive))',
+                            foreground: 'hsl(var(--destructive-foreground))',
+                        },
+                        muted: {
+                            DEFAULT: 'hsl(var(--muted))',
+                            foreground: 'hsl(var(--muted-foreground))',
+                        },
+                        accent: {
+                            DEFAULT: 'hsl(var(--accent))',
+                            foreground: 'hsl(var(--accent-foreground))',
+                        },
+                        popover: {
+                            DEFAULT: 'hsl(var(--popover))',
+                            foreground: 'hsl(var(--popover-foreground))',
+                        },
+                        card: {
+                            DEFAULT: 'hsl(var(--card))',
+                            foreground: 'hsl(var(--card-foreground))',
+                        },
+                    },
+                    borderRadius: {
+                        lg: 'var(--radius)',
+                        md: 'calc(var(--radius) - 2px)',
+                        sm: 'calc(var(--radius) - 4px)',
+                    },
+                },
+            },
+        };
+    </script>
+
+    <!-- 4. Define ShadCN CSS Variables (Light Theme) AND Legend Styles -->
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: "Times New Roman", Times, serif; /* Default font */
-            background-color: #ffffff;
-            color: #000;
-            overflow: hidden;
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96.1%;
+            --secondary-foreground: 222.2 47.4% 11.2%;
+            --muted: 210 40% 96.1%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96.1%;
+            --accent-foreground: 222.2 47.4% 11.2%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 222.2 84% 4.9%;
+            --radius: 0.5rem;
         }
         
-        canvas {
-            display: block;
+        /* Remove default number input spinners */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
         }
 
-        /* Styles for the CSS2D labels */
+        /* Basic styling for the 3D canvas labels */
         .label {
             color: #111;
             font-size: 12px;
@@ -32,12 +110,12 @@
             padding: 2px 5px;
             border-radius: 4px;
             border: 1px solid #ddd;
-            white-space: nowrap; /* Keep label on one line */
-            pointer-events: none; /* Make labels non-interactive */
-            user-select: none; /* Prevent text selection */
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
         }
 
-        /* Styles for the legend */
+        /* --- MODIFIED: Added old legend styles back --- */
         .legend {
             position: absolute;
             top: 20px;
@@ -48,13 +126,15 @@
             border: 1px solid #ccc;
             z-index: 100;
             font-size: 13px;
+            /* Use the default sans-serif font, not mono */
+            font-family: 'Inter', sans-serif; 
         }
         .legend h4 {
             margin: 0 0 8px 0;
             padding-bottom: 5px;
             border-bottom: 1px solid #ddd;
+            font-weight: 600; /* Added for clarity */
         }
-        
         .legend-item {
             display: flex;
             align-items: center;
@@ -70,363 +150,145 @@
         .legend-item:last-child {
             margin-bottom: 0;
         }
+        /* --- End of Legend Styles --- */
 
-        /* --- Styles for Edit Button and Panel --- */
-        .edit-button {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            padding: 8px; 
-            background-color: #f0f0f0; 
-            color: #333; 
-            border: 1px solid #aaa; 
-            border-radius: 50%; 
-            cursor: pointer;
-            z-index: 100;
-            width: 42px; 
-            height: 42px; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .edit-button:hover {
-            background-color: #e0e0e0; 
-        }
-        .edit-button svg {
-            width: 22px;
-            height: 22px;
-            fill: #333;
-        }
-
-        .edit-panel-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none; /* Hidden by default */
-            justify-content: center;
-            align-items: center;
-        }
-
-        .edit-panel {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 85vh; /* MODIFIED: Use max-height */
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #aaa;
-            font-family: 'Space Mono', monospace; /* ADDED: Set panel font */
-            overflow-y: auto; /* ADDED: Make the panel scroll if content overflows */
-        }
-
-        .edit-panel h3 {
-            margin-top: 0;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ccc;
-        }
-        
-        /* Subheading for sections */
-        .edit-panel h4 {
-             margin-top: 15px;
-             margin-bottom: 5px;
-             border-bottom: 1px solid #ddd;
-             padding-bottom: 5px;
-        }
-
-        .panel-settings {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding: 10px 0;
-            /* MODIFIED: Removed border-bottom, will be handled by h4 */
-            margin-bottom: 5px;
-        }
-        .setting-row {
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-        }
-        .setting-row label {
-            margin-right: 10px;
-            font-weight: bold;
-        }
-        .setting-row input[type="range"] {
-            flex-grow: 1;
-            margin-right: 5px;
-        }
-        .setting-row span {
-            min-width: 25px; /* Give space for value */
-            text-align: right;
-            font-family: 'Courier New', Courier, monospace;
-        }
-        .font-picker-select {
-            font-family: inherit;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 4px;
-            background: #fff;
-            flex-grow: 1;
-        }
-
-
-        .layer-list-container {
-            /* flex: 1; */ /* REMOVED */
-            /* overflow-y: auto; */ /* REMOVED */
-            border: 1px solid #ddd;
-            padding: 10px;
-            background: #f9f9f9;
-            /* min-height: 100px; */ /* REMOVED */
-        }
-
-        .layer-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            background: #fff;
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        .layer-row-header {
-            background: none;
-            border: none;
-            font-weight: bold;
-            padding-bottom: 0;
-        }
-        .layer-row-header span {
-            text-align: center;
-        }
-
-        .layer-row span {
-            flex: 2;
-            margin-right: 10px;
-            font-size: 12px;
-        }
-        .layer-row input {
-            flex: 1;
-            margin-right: 10px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-        }
-        .layer-row input[name="name"] {
-            flex: 3;
-        }
-        
-        .layer-row input[type="color"] {
-            flex: 0 0 auto; /* Don't grow */
-            width: 30px;
-            height: 30px;
-            padding: 0;
-            border: none;
-            background: none;
-            cursor: pointer;
-        }
-
-        .layer-row .remove-btn {
-            flex: 0 0 auto; /* Don't grow/shrink */
-            padding: 5px 8px;
-            background: #f0f0f0; 
-            color: #333; 
-            border: 1px solid #ccc; 
-            border-radius: 3px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-        .layer-row .remove-btn:hover {
-            background: #e0e0e0; 
-        }
-
-        /* ADDED: Styles for legend editor */
-        .legend-list-container {
-            /* flex: 1; */ /* REMOVED */
-            /* overflow-y: auto; */ /* REMOVED */
-            border: 1px solid #ddd;
-            padding: 10px;
-            background: #f9f9f9;
-            /* min-height: 100px; */ /* REMOVED */
-            margin-bottom: 5px; /* Space before 'Add Type' button */
-        }
-        
-        .legend-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            background: #fff;
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        .legend-row-header {
-            background: none;
-            border: none;
-            font-weight: bold;
-            padding-bottom: 0;
-        }
-        .legend-row input[name="type-name"] {
-            flex: 2;
-            margin-right: 10px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-        }
-        .legend-row input[type="color"] {
-            flex: 1;
-            height: 30px;
-            padding: 0;
-            border: none;
-            background: none;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        .legend-row .remove-btn {
-            flex: 0 0 auto; /* Don't grow/shrink */
-            padding: 5px 8px;
-            background: #f0f0f0; 
-            color: #333; 
-            border: 1px solid #ccc; 
-            border-radius: 3px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-        .legend-row .remove-btn:hover {
-            background: #e0e0e0; 
-        }
-        /* END: Added styles */
-
-        .panel-controls {
-            padding-top: 15px;
-            display: flex;
-            justify-content: flex-end; /* MODIFIED: Align buttons to the right */
-        }
-        .panel-btn {
-            padding: 10px 15px;
-            border: 1px solid #ccc; 
-            border-radius: 5px;
-            cursor: pointer;
-            background: #f0f0f0; 
-            color: #333; 
-        }
-        .panel-btn:hover {
-            background: #e0e0e0; 
-        }
-        /* --- End of Styles --- */
     </style>
-    
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
-        }
-      }
-    </script>
 </head>
-<body>
+<body class="bg-background text-foreground font-sans antialiased">
 
-    <!-- Legend -->
+    <!-- MODIFIED: Reverted Legend HTML -->
     <div id="legend" class="legend">
         <h4>Layer Key</h4>
         <!-- Items added by JS -->
     </div>
 
-    <!-- Edit button -->
-    <button id="show-edit-panel-btn" class="edit-button" title="Edit Model">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.71-1.69-0.98l-0.38-2.65C14.46,2.18,14.25,2,14,2 h-4c-0.25,0-0.46,0.18-0.49,0.42L9.13,5.07c-0.63,0.27-1.19,0.6-1.69,0.98L5.05,5.09C4.83,5.02,4.58,5.09,4.46,5.3 l-1.92,3.32c-0.12,0.22-0.07,0.47,0.12,0.61l2.03,1.58C4.58,11.36,4.56,11.68,4.56,12c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.06,0.71,1.69,0.98 l0.38,2.65C9.54,21.82,9.75,22,10,22h4c0.25,0,0.46-0.18,0.49-0.42l0.38-2.65c0.63-0.27,1.19-0.6,1.69-0.98l2.39,0.96 c0.22,0.08,0.47,0.01,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+    <!-- ShadCN-style Edit Button (Button) -->
+    <button id="show-edit-panel-btn" class="absolute bottom-6 left-6 z-10 h-12 w-12 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center transition-colors" title="Edit Model">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
         </svg>
     </button>
 
-    <!-- Edit panel overlay -->
-    <div id="edit-panel-overlay" class="edit-panel-overlay">
-        <div class="edit-panel">
-            <h3>Edit Model</h3>
+    <!-- ShadCN-style Edit Panel Overlay (Dialog/Modal) -->
+    <div id="edit-panel-overlay" class="fixed inset-0 z-50 bg-black/60 items-center justify-center p-4 hidden">
+        <!-- Panel (Card) -->
+        <div class="border bg-card text-card-foreground rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] flex flex-col font-mono">
             
-            <!-- Settings section -->
-            <div class="panel-settings">
-                <div class="setting-row">
-                    <label for="font-picker">Font:</label>
-                    <select id="font-picker" class="font-picker-select">
-                        <!-- Options added by JS -->
-                    </select>
-                </div>
+            <!-- Panel Header -->
+            <div class="p-6 pb-4 border-b">
+                <h3 class="text-xl font-semibold">Edit Model</h3>
+            </div>
+
+            <!-- Panel Content (Scrollable) -->
+            <div class="p-6 space-y-6 overflow-y-auto">
                 
-                <div class="setting-row">
-                    <label for="label-distance">Label Distance:</label>
-                    <input type="range" id="label-distance" name="label-distance" min="1" max="10" step="0.1" value="3.0">
-                    <span id="label-distance-value">3.0</span>
+                <!-- General Settings -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-medium">General Settings</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Font Picker -->
+                        <div class="flex flex-col space-y-2">
+                            <label for="font-picker" class="text-sm font-medium">Font</label>
+                            <select id="font-picker" class="h-10 w-full border border-input bg-background rounded-md px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                <!-- Options added by JS -->
+                            </select>
+                        </div>
+                        <!-- Label Font Size -->
+                        <div class="flex flex-col space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label for="font-size" class="text-sm font-medium">Label Font Size</label>
+                                <span class="text-sm text-muted-foreground"><span id="font-size-value">12</span>px</span>
+                            </div>
+                            <input type="range" id="font-size" name="font-size" min="8" max="24" step="1" value="12" class="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary">
+                        </div>
+                        <!-- Label Distance -->
+                        <div class="flex flex-col space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label for="label-distance" class="text-sm font-medium">Label Distance</label>
+                                <span id="label-distance-value" class="text-sm text-muted-foreground">3.0</span>
+                            </div>
+                            <input type="range" id="label-distance" name="label-distance" min="1" max="10" step="0.1" value="3.0" class="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary">
+                        </div>
+                        <!-- Cube Gap -->
+                        <div class="flex flex-col space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label for="cube-gap" class="text-sm font-medium">Cube Gap</label>
+                                <span id="cube-gap-value" class="text-sm text-muted-foreground">2.0</span>
+                            </div>
+                            <input type="range" id="cube-gap" name="cube-gap" min="0" max="20" step="0.5" value="2.0" class="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary">
+                        </div>
+                        <!-- Block Opacity -->
+                        <div class="flex flex-col space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label for="block-opacity" class="text-sm font-medium">Block Opacity</label>
+                                <span id="block-opacity-value" class="text-sm text-muted-foreground">0.85</span>
+                            </div>
+                            <input type="range" id="block-opacity" name="block-opacity" min="0" max="1" step="0.05" value="0.85" class="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="setting-row">
-                    <label for="cube-gap">Cube Gap:</label>
-                    <input type="range" id="cube-gap" name="cube-gap" min="0" max="20" step="0.5" value="2.0">
-                    <span id="cube-gap-value">2.0</span>
+                <!-- Edit Legend Key (Table) -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-medium">Edit Legend Key</h4>
+                    <div class="border rounded-lg">
+                        <!-- Legend Header -->
+                        <div class="flex p-3 bg-muted/50 border-b">
+                            <span class="flex-[3] text-sm font-medium text-muted-foreground px-2">Type Name</span>
+                            <span class="flex-[1] text-sm font-medium text-muted-foreground px-2">Color</span>
+                            <span class="w-9 h-1 px-2"></span> <!-- Spacer for remove button -->
+                        </div>
+                        <!-- Legend List -->
+                        <div id="legend-list" class="divide-y divide-border">
+                            <!-- JS-injected rows go here -->
+                        </div>
+                    </div>
+                    <button id="add-type-btn" class="h-10 px-4 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md text-sm font-medium transition-colors">Add Type</button>
                 </div>
 
-                <div class="setting-row">
-                    <label for="font-size">Label Font Size:</label>
-                    <input type="range" id="font-size" name="font-size" min="8" max="24" step="1" value="12">
-                    <span id="font-size-value">12</span>
-                    <span style="padding-left: 2px;">px</span>
+                <!-- Edit Layers (Table) -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-medium">Edit Layers</h4>
+                    <div class="border rounded-lg">
+                        <!-- Layers Header -->
+                        <div class="flex p-3 bg-muted/50 border-b text-sm font-medium text-muted-foreground">
+                            <span class="px-2" style="flex: 3;">Layer Name</span>
+                            <span class="px-2" style="flex: 1;">H</span>
+                            <span class="px-2" style="flex: 1;">W</span>
+                            <span class="px-2" style="flex: 1;">C</span>
+                            <span class="px-2" style="width: 44px;">Color</span>
+                            <span class="px-2" style="width: 36px;"></span> <!-- Spacer -->
+                        </div>
+                        <!-- Layers List -->
+                        <div id="layer-list" class="divide-y divide-border">
+                            <!-- JS-injected rows go here -->
+                        </div>
+                    </div>
+                    <button id="add-layer-btn" class="h-10 px-4 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md text-sm font-medium transition-colors">Add Layer</button>
                 </div>
 
-                <div class="setting-row">
-                    <label for="block-opacity">Block Opacity:</label>
-                    <input type="range" id="block-opacity" name="block-opacity" min="0" max="1" step="0.05" value="0.85">
-                    <span id="block-opacity-value">0.85</span>
-                </div>
             </div>
-            <!-- END: Settings section -->
 
-            <!-- ADDED: Legend Key Editor -->
-            <h4>Edit Legend Key</h4>
-            <div class="legend-list-container" id="legend-list-container">
-                <div class="legend-row legend-row-header">
-                    <span style="flex: 2;">Type Name</span>
-                    <span style="flex: 1;">Color</span>
-                    <span style="flex: 0 0 auto; width: 60px;"></span> <!-- Placeholder for remove -->
-                </div>
-                <div id="legend-list">
-                    <!-- Legend type rows will be dynamically inserted here -->
-                </div>
+            <!-- Panel Footer -->
+            <div class="p-6 pt-4 border-t flex justify-between items-center">
+                <button id="close-panel-btn" class="h-10 px-4 py-2 bg-background border border-input hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium transition-colors">Close</button>
+                <button id="update-network-btn" class="h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm font-medium transition-colors">Update Visualization</button>
             </div>
-            <button id="add-type-btn" class="panel-btn" style="align-self: flex-start; margin-top: 5px; margin-bottom: 10px;">Add Type</button>
-            <!-- END: Legend Key Editor -->
 
-            <!-- MODIFIED: Added h4 for Layers -->
-            <h4>Edit Layers</h4>
-            <div class="layer-list-container" id="layer-list-container">
-                <div class="layer-row layer-row-header">
-                    <span style="flex: 3;">Layer Name</span>
-                    <span style="flex: 1;">H</span>
-                    <span style="flex: 1;">W</span>
-                    <span style="flex: 1;">C</span>
-                    <span style="flex: 0 0 auto; width: 30px; margin-right: 10px;">Color</span>
-                    <span style="flex: 0 0 auto; width: 60px;"></span> <!-- Placeholder for remove button header -->
-                </div>
-                <div id="layer-list">
-                    <!-- Layer rows will be dynamically inserted here -->
-                </div>
-            </div>
-            <!-- MOVED: Add Layer Button -->
-            <button id="add-layer-btn" class="panel-btn add-layer-btn" style="align-self: flex-start; margin-top: 5px;">Add Layer</button>
-            
-            <div class="panel-controls">
-                <!-- MOVED: 'Add Layer' button was here -->
-                <div>
-                    <button id="close-panel-btn" class="panel-btn close-btn" style="margin-right: 10px;">Close</button>
-                    <button id="update-network-btn" class="panel-btn update-btn">Update Visualization</button>
-                </div>
-            </div>
         </div>
     </div>
 
+
+    <!-- 5. Importmap and Three.js script (unchanged) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+            }
+        }
+    </script>
 
     <script type="module">
         import * as THREE from 'three';
@@ -462,24 +324,24 @@
 
         // MODIFIED: Make colorMap mutable
         let colorMap = {
-            'Input': 0x4285F4,    // Blue
-            'Pool': 0xDB4437,     // Red
-            'Conv': 0xF4B400,     // Yellow
-            'LIF': 0x0F9D58,      // Green
-            'Flatten': 0xAB47BC,  // Purple
-            'FC': 0xFF6D00,       // Orange
+            'Input': 0x4285F4,
+            'Pool': 0xDB4437,
+            'Conv': 0xF4B400,
+            'LIF': 0x0F9D58,
+            'Flatten': 0xAB47BC,
+            'FC': 0xFF6D00,
         };
-        const defaultColor = 0xAAAAAA; // Grey fallback
+        const defaultColor = 0xAAAAAA;
 
         function getLayerType(name) {
             const lowerName = name.toLowerCase();
-            // MODIFIED: Iterate over colorMap keys to find a match
-            for (const key in colorMap) {
-                if (lowerName.includes(key.toLowerCase())) {
-                    return key;
+            // Check against colorMap keys first
+            for (const typeName in colorMap) {
+                if (lowerName.includes(typeName.toLowerCase())) {
+                    return typeName;
                 }
             }
-            // Fallback logic if no key matches
+            // Fallback checks
             if (lowerName.includes('input')) return 'Input';
             if (lowerName.includes('pool')) return 'Pool';
             if (lowerName.includes('conv')) return 'Conv';
@@ -546,377 +408,9 @@
 
         function createLegend() {
             const legend = document.getElementById('legend');
-            const items = legend.querySelectorAll('.legend-item');
+            // Clear everything except the title
+            const items = legend.querySelectorAll('.legend-item'); // MODIFIED: Select old class
             items.forEach(item => item.remove());
 
             const addedTypes = new Set();
-
-            // Base legend on colorMap
-            for (const layerType in colorMap) {
-                if (!addedTypes.has(layerType)) {
-                    const color = colorMap[layerType];
-                    const hexColor = '#' + new THREE.Color(color).getHexString();
-
-                    const item = document.createElement('div');
-                    item.className = 'legend-item';
-                    
-                    const colorBox = document.createElement('div');
-                    colorBox.className = 'legend-color-box';
-                    colorBox.style.backgroundColor = hexColor;
-                    
-                    const text = document.createElement('span');
-                    text.textContent = layerType;
-                    
-                    item.appendChild(colorBox);
-                    item.appendChild(text);
-                    legend.appendChild(item);
-                    
-                    addedTypes.add(layerType);
-                }
-            }
-        }
-
-        function createNetwork() {
-            let currentZ = 0;
-            const outlineMaterial = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
-            
-            const lineOffset = Math.max(0.1, labelDistance - 0.2); 
-
-            layerData.forEach((layer, i) => {
-                const visual_W = Math.log(layer.W + 1) * 1.5;
-                const visual_H = Math.log(layer.H + 1) * 1.5;
-                const visual_C = Math.log(layer.C + 1) * 1.5;
-
-                const geometry = new THREE.BoxGeometry(visual_W, visual_H, visual_C);
-                
-                // Get color from layer data if it exists, otherwise use map
-                const layerColor = layer.color !== undefined 
-                    ? layer.color 
-                    : (colorMap[getLayerType(layer.name)] || defaultColor);
-                
-                const material = new THREE.MeshLambertMaterial({
-                    color: layerColor,
-                    transparent: true,
-                    opacity: blockOpacity 
-                });
-
-                const mesh = new THREE.Mesh(geometry, material);
-                const meshCenterZ = currentZ + visual_C / 2;
-                mesh.position.set(0, 0, meshCenterZ);
-                
-                networkGroup.add(mesh);
-
-                const edges = new THREE.EdgesGeometry(geometry);
-                const line = new THREE.LineSegments(edges, outlineMaterial);
-                line.position.copy(mesh.position); 
-                networkGroup.add(line);
-
-                // --- Dimension Label (Below Cube) ---
-                const dimLabelDiv = document.createElement('div');
-                dimLabelDiv.className = 'label';
-                dimLabelDiv.textContent = `${layer.H}x${layer.W}x${layer.C}`;
-                dimLabelDiv.style.fontSize = `${labelFontSize}px`;
-                
-                const dimLabel = new CSS2DObject(dimLabelDiv);
-                dimLabel.position.set(0, -visual_H / 2 - labelDistance, meshCenterZ); 
-                networkGroup.add(dimLabel);
-
-                // Callout line for dimension label
-                const dimLinePoints = [
-                    new THREE.Vector3(0, -visual_H / 2, meshCenterZ), // Point on bottom of cube
-                    new THREE.Vector3(0, -visual_H / 2 - lineOffset, meshCenterZ)  
-                ];
-                const dimLineGeo = new THREE.BufferGeometry().setFromPoints(dimLinePoints);
-                const dimLineMat = new THREE.LineBasicMaterial({ color: 0x555555, linewidth: 1 });
-                const dimLine = new THREE.Line(dimLineGeo, dimLineMat);
-                networkGroup.add(dimLine);
-
-                // --- Name Label (Above Cube) ---
-                if (showNameLabels) {
-                    const nameLabelDiv = document.createElement('div');
-                    nameLabelDiv.className = 'label';
-                    nameLabelDiv.textContent = layer.name;
-                    nameLabelDiv.style.fontSize = `${labelFontSize}px`;
-                    
-                    const nameLabel = new CSS2DObject(nameLabelDiv);
-                    nameLabel.position.set(0, visual_H / 2 + labelDistance, meshCenterZ); 
-                    networkGroup.add(nameLabel);
-
-                    // Callout line for name label
-                    const nameLinePoints = [
-                        new THREE.Vector3(0, visual_H / 2, meshCenterZ), // Point on top of cube
-                        new THREE.Vector3(0, visual_H / 2 + lineOffset, meshCenterZ)
-                    ];
-                    const nameLineGeo = new THREE.BufferGeometry().setFromPoints(nameLinePoints);
-                    const nameLineMat = new THREE.LineBasicMaterial({ color: 0x555555, linewidth: 1 });
-                    const nameLine = new THREE.Line(nameLineGeo, nameLineMat);
-                    networkGroup.add(nameLine);
-                }
-
-
-                if (i > 0) {
-                    const prevLayer = layerData[i-1];
-                    const prev_visual_C = Math.log(prevLayer.C + 1) * 1.5;
-                    const prevLayerZEnd = currentZ - gap;
-                    const prevLayerCenterZ = prevLayerZEnd - prev_visual_C / 2;
-
-                    const points = [
-                        new THREE.Vector3(0, 0, prevLayerCenterZ + prev_visual_C / 2),
-                        new THREE.Vector3(0, 0, meshCenterZ - visual_C / 2)
-                    ];
-                    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-                    const lineMat = new THREE.LineBasicMaterial({ color: 0x555555, linewidth: 1 });
-                    const connector = new THREE.Line(lineGeo, lineMat);
-                    networkGroup.add(connector);
-                }
-
-                currentZ += visual_C + gap;
-            });
-
-            scene.add(networkGroup);
-            totalZLength = currentZ - gap;
-        }
-
-        // --- Functions for Edit Panel ---
-        
-        function setupFontPicker() {
-            const fonts = ["Times New Roman", "Arial", "Courier New", "Georgia", "Verdana"];
-            const fontPicker = document.getElementById('font-picker');
-            
-            fontPicker.innerHTML = ''; 
-
-            fonts.forEach(font => {
-                const option = document.createElement('option');
-                option.value = font;
-                option.textContent = font;
-                if (font === "Times New Roman") {
-                    option.selected = true;
-                }
-                fontPicker.appendChild(option);
-            });
-
-            fontPicker.addEventListener('change', (e) => {
-                document.body.style.fontFamily = e.target.value;
-            });
-        }
-
-        function setupEditPanelListeners() {
-            const overlay = document.getElementById('edit-panel-overlay');
-            const showBtn = document.getElementById('show-edit-panel-btn');
-            const closeBtn = document.getElementById('close-panel-btn');
-            const updateBtn = document.getElementById('update-network-btn');
-            const addLayerBtn = document.getElementById('add-layer-btn');
-            const addTypeBtn = document.getElementById('add-type-btn'); // ADDED
-            
-            const labelSlider = document.getElementById('label-distance');
-            const labelValue = document.getElementById('label-distance-value');
-            const gapSlider = document.getElementById('cube-gap');
-            const gapValue = document.getElementById('cube-gap-value');
-            const fontSizeSlider = document.getElementById('font-size');
-            const fontSizeValue = document.getElementById('font-size-value');
-            const opacitySlider = document.getElementById('block-opacity');
-            const opacityValue = document.getElementById('block-opacity-value');
-
-            showBtn.addEventListener('click', () => {
-                populateEditPanel();
-                populateLegendPanel(); // ADDED
-                
-                // Set current values to sliders when opening
-                labelSlider.value = labelDistance;
-                labelValue.textContent = labelDistance.toFixed(1);
-                gapSlider.value = gap;
-                gapValue.textContent = gap.toFixed(1);
-                fontSizeSlider.value = labelFontSize;
-                fontSizeValue.textContent = labelFontSize;
-                opacitySlider.value = blockOpacity;
-                opacityValue.textContent = blockOpacity.toFixed(2);
-
-                overlay.style.display = 'flex';
-            });
-
-            closeBtn.addEventListener('click', () => {
-                overlay.style.display = 'none';
-            });
-
-            addLayerBtn.addEventListener('click', () => {
-                addLayerRow({ name: 'New Layer', H: 1, W: 1, C: 1 });
-            });
-
-            // ADDED: Listener for Add Type button
-            addTypeBtn.addEventListener('click', () => {
-                addLegendRow('NewType', 0xCCCCCC); // Add a new type with a default grey
-            });
-
-            updateBtn.addEventListener('click', () => {
-                rebuildNetworkFromPanel();
-                overlay.style.display = 'none';
-            });
-
-            // Listeners for sliders to update text display
-            labelSlider.addEventListener('input', (e) => {
-                labelValue.textContent = parseFloat(e.target.value).toFixed(1);
-            });
-            gapSlider.addEventListener('input', (e) => {
-                gapValue.textContent = parseFloat(e.target.value).toFixed(1);
-            });
-            fontSizeSlider.addEventListener('input', (e) => {
-                fontSizeValue.textContent = e.target.value;
-            });
-            opacitySlider.addEventListener('input', (e) => {
-                opacityValue.textContent = parseFloat(e.target.value).toFixed(2);
-            });
-        }
-
-        function populateEditPanel() {
-            const list = document.getElementById('layer-list');
-            list.innerHTML = ''; // Clear existing list
-            layerData.forEach(layer => {
-                addLayerRow(layer);
-            });
-        }
-
-        // ADDED: New function to populate the legend editor
-        function populateLegendPanel() {
-            const list = document.getElementById('legend-list');
-            list.innerHTML = ''; // Clear existing list
-            for (const [name, color] of Object.entries(colorMap)) {
-                addLegendRow(name, color);
-            }
-        }
-
-        // ADDED: New function to add a row to the legend editor
-        function addLegendRow(name, color) {
-            const list = document.getElementById('legend-list');
-            const row = document.createElement('div');
-            row.className = 'legend-row';
-            
-            const hexColor = '#' + new THREE.Color(color).getHexString();
-
-            row.innerHTML = `
-                <input type="text" name="type-name" value="${name}">
-                <input type="color" name="type-color" value="${hexColor}">
-                <button class="remove-btn">X</button>
-            `;
-            
-            row.querySelector('.remove-btn').addEventListener('click', () => {
-                row.remove();
-            });
-
-            list.appendChild(row);
-        }
-
-        function addLayerRow(layer) {
-            const list = document.getElementById('layer-list');
-            const row = document.createElement('div');
-            row.className = 'layer-row';
-            
-            const initialColor = layer.color !== undefined 
-                ? layer.color 
-                : (colorMap[getLayerType(layer.name)] || defaultColor);
-            const hexColor = '#' + new THREE.Color(initialColor).getHexString();
-
-            row.innerHTML = `
-                <input type="text" name="name" value="${layer.name}">
-                <input type="number" name="H" value="${layer.H}" min="1">
-                <input type="number" name="W" value="${layer.W}" min="1">
-                <input type="number" name="C" value="${layer.C}" min="1">
-                <input type="color" name="color" value="${hexColor}">
-                <button class="remove-btn">X</button>
-            `;
-            
-            row.querySelector('.remove-btn').addEventListener('click', () => {
-                row.remove();
-            });
-
-            list.appendChild(row);
-        }
-
-        // ADDED: New function to rebuild the global colorMap from the panel
-        function rebuildColorMapFromPanel() {
-            const list = document.getElementById('legend-list');
-            const rows = list.querySelectorAll('.legend-row');
-            const newColorMap = {};
-
-            rows.forEach(row => {
-                const name = row.querySelector('input[name="type-name"]').value;
-                const colorHex = row.querySelector('input[name="type-color"]').value;
-                const color = new THREE.Color(colorHex).getHex();
-                if (name) { // Only add if name is not empty
-                    newColorMap[name] = color;
-                }
-            });
-
-            colorMap = newColorMap; // Update the global map
-        }
-
-        function rebuildNetworkFromPanel() {
-            rebuildColorMapFromPanel(); // ADDED: Rebuild the color map first
-
-            const list = document.getElementById('layer-list');
-            const rows = list.querySelectorAll('.layer-row');
-            const newLayerData = [];
-
-            labelDistance = parseFloat(document.getElementById('label-distance').value) || 3.0;
-            gap = parseFloat(document.getElementById('cube-gap').value) || 2.0;
-            labelFontSize = parseInt(document.getElementById('font-size').value) || 12; 
-            blockOpacity = parseFloat(document.getElementById('block-opacity').value); 
-
-            rows.forEach(row => {
-                const name = row.querySelector('input[name="name"]').value;
-                const H = parseInt(row.querySelector('input[name="H"]').value) || 1;
-                const W = parseInt(row.querySelector('input[name="W"]').value) || 1;
-                const C = parseInt(row.querySelector('input[name="C"]').value) || 1;
-                const colorHex = row.querySelector('input[name="color"]').value;
-                const color = new THREE.Color(colorHex).getHex();
-
-                newLayerData.push({ name, H, W, C, color });
-            });
-
-            layerData = newLayerData;
-
-            // Clear the old network
-            while (networkGroup.children.length > 0) {
-                const child = networkGroup.children[0];
-                networkGroup.remove(child);
-            }
-
-            // Reset state and rebuild
-            totalZLength = 0;
-            createNetwork();
-            createLegend(); // ADDED: Rebuild the legend UI
-
-            // Recenter camera
-            const centerZ = totalZLength / 2;
-            camera.lookAt(0, 0, centerZ);
-            controls.target.set(0, 0, centerZ);
-            camera.position.set(40, 40, 40 + centerZ);
-            controls.update();
-        }
-
-        // --- End of Added Functions ---
-
-        function onWindowResize() {
-            const aspect = window.innerWidth / window.innerHeight;
-            camera.left = -frustumSize * aspect / 2;
-            camera.right = frustumSize * aspect / 2;
-            camera.top = frustumSize / 2;
-            camera.bottom = -frustumSize / 2;
-            camera.updateProjectionMatrix();
-            
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            labelRenderer.setSize(window.innerWidth, window.innerHeight); 
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-            labelRenderer.render(scene, camera); 
-        }
-
-        init();
-        animate();
-
-    </script>
-</body>
-</html>
+            for (const layerType in colorM
