@@ -7,7 +7,95 @@
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;:root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+}
+
+/* Remove default number input spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Basic styling for the 3D canvas labels */
+.label {
+    color: #111;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.75);
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    /* Font-family will be set by JS */
+}
+
+.label.no-border {
+    border: none;
+    background: transparent;
+}
+
+/* --- MODIFIED: Added old legend styles back --- */
+.legend {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 10px 15px;
+    /* MODIFIED: Removed border-radius for square corners */
+    /* border-radius: 8px; */
+    border: 1px solid #ccc;
+    z-index: 100;
+    font-size: 13px;
+    /* MODIFIED: Removed hard-coded font-family, will be set by JS */
+    /* font-family: 'Inter', sans-serif; */
+}
+.legend h4 {
+    margin: 0 0 8px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+    font-weight: 600; /* Added for clarity */
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+.legend-color-box {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    border: 1px solid #555;
+    flex-shrink: 0;
+}
+.legend-item:last-child {
+    margin-bottom: 0;
+}
+/* --- End of Legend Styles --- */
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
